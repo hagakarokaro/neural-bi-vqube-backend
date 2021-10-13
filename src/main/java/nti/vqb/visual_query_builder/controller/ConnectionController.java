@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 
@@ -51,6 +52,13 @@ public class ConnectionController {
     public Connection findById(@PathVariable int id) {
 
         return service.findById(id);
+    }
+
+    @GetMapping("/tree")
+    public List<Map<String, Object>> getTree(@RequestBody Map<String, Object> body){
+        Long id = Long.parseLong(body.get("resource_id").toString());
+
+        return null;
     }
 
     @PostMapping()

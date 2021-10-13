@@ -72,12 +72,52 @@ public class postgresAdapter implements Adapter{
 
     @Override
     public List<Map<String, Object>> getSchema(Connection conn, String catalog) {
-        return null;
+        List<Map<String, Object>> results = new ArrayList<>();
+        String query = "SELECT schema_name AS name FROM information_schema.schemata WHERE catalog_name = ?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, catalog);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Map<String, Object> field = new HashMap<>();
+                field.put("name", resultSet.getString("name"));
+                results.add(field);
+            }
+            preparedStatement.close();
+//            conn.close();
+
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return results;
     }
 
     @Override
     public List<Map<String, Object>> getTables(Connection conn, String catalog, String schema) {
-        return null;
+        List<Map<String, Object>> results = new ArrayList<>();
+        String query = "SELECT table_name AS name FROM information_schema.tables WHERE table_catalog = ?";
+        if(schema != null) query = query + " AND table_schema = ? ";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, catalog);
+            if(schema != null) preparedStatement.setString(2, schema);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Map<String, Object> field = new HashMap<>();
+                field.put("name", resultSet.getString("name"));
+                results.add(field);
+            }
+            preparedStatement.close();
+//            conn.close();
+
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return results;
     }
 
     @Override
